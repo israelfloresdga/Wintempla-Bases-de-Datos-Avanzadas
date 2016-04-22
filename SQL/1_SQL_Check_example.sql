@@ -1,0 +1,50 @@
+﻿USE master;
+GO
+
+IF EXISTS(SELECT * FROM sysdatabases WHERE name='check_example')
+BEGIN 
+	RAISERROR('Dropping existing check_example database...', 0, 1)
+	DROP DATABASE check_example;
+END
+GO
+
+CREATE DATABASE check_example;
+GO
+
+USE check_example;
+GO
+
+IF db_name() <>'check_example'
+BEGIN 
+	RAISERROR('Use database failed...', 22, 127) WITH LOG
+	DROP DATABASE check_example;
+END
+GO
+
+CREATE TABLE client
+(
+	client_id INT NOT NULL PRIMARY KEY IDENTITY CONSTRAINT client_id_ck CHECK(client_id>-1),
+	last_name NVARCHAR(25) NOT NULL,
+	first_name NVARCHAR(25) NOT NULL,
+	ssn CHAR(11) NOT NULL UNIQUE
+		CONSTRAINT client_ssn_ck CHECK 
+		(ssn LIKE '[0123456789][0123456789][0123456789]-[0123456789][0123456789]-[0123456789][0123456789][0123456789][0123456789]'),
+	addressz NVARCHAR(200) NULL,
+	city NVARCHAR(50) NULL,
+	statez CHAR(2) NOT NULL,
+	zip NVARCHAR(10) NULL
+		CONSTRAINT client_zip_ck CHECK
+			(zip LIKE '[0123456789][0123456789][0123456789][0123456789][0123456789]'
+			OR zip LIKE '[0123456789][0123456789][0123456789][0123456789][0123456789]-[0123456789][0123456789][0123456789][0123456789]'
+			),
+	phone CHAR(12) NOT NULL
+		CONSTRAINT client_phone_ck CHECK
+			(phone LIKE '[0123456789][0123456789][0123456789]-[0123456789][0123456789][0123456789]-[0123456789][0123456789][0123456789]'),
+	gender CHAR(1) NOT NULL
+		CONSTRAINT client_gender_ck CHECK
+			(gender='F' OR gender='M'),
+	age INT
+		CONSTRAINT client_age_ck CHECK
+			(age BETWEEN 0 AND 150),
+);
+GO
