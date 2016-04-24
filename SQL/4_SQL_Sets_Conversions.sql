@@ -26,6 +26,24 @@ WHERE
 ORDER BY c.name ASC
 
 
+
+--Conversion 2
+--use aeromexico oracle
+SELECT destination || ' is in ' || NVL(city, 'UNKNOWN') || ' for ' || NVL(flight_cost, 500)
+FROM mexico
+
+
+--Conversion 6
+--use ford oracle
+SELECT name, phone AS current_phone,(SUBSTR(phone,0,3)+55)||(SUBSTR(phone,4)) AS new_phone
+FROM store
+
+--use ford mssql
+SELECT name, 
+	phone AS current_phone,
+	CAST((SUBSTRING(phone,1,3)+55) AS nvarchar)+(SUBSTRING(phone,4,12)) AS new_phone
+FROM store
+
 --Conversion 8
 SELECT
 	c.name,
